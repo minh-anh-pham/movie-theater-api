@@ -1,6 +1,6 @@
 const {Router} = require("express");
 const userRouter = Router();
-const {User} = require("../models");
+const {User, Show} = require("../models");
 
 // The User Router should GET ALL users from the database using the endpoint /users.
 userRouter.get("/", async (req, res) => {
@@ -25,5 +25,20 @@ userRouter.get("/:id", async (req, res) => {
         res.status(500).json(error);
     }
 })
+
+// The User Router should GET all the shows watched by a user using an endpoint.
+userRouter.get("/:id/shows", async (req, res) => {
+    try {
+        const userById = await User.findByPk(req.params.id);
+        const userShows = await userById.getShows();
+
+        res.status(200).json({userShows});
+    }
+    catch (error) {
+        res.status(500).json(error);
+    }
+})
+
+
 
 module.exports = userRouter;
