@@ -49,7 +49,16 @@ showRouter.get("/genres/:genreInput", async (req, res) => {
 })
 
 // The Show Router should update a rating on a specific show using an endpoint.
-showRouter.put("/:showId/watched", getShow, async (req, res) => {
+showRouter.put("/:showId/watched",
+body("rating").notEmpty(),
+getShow, async (req, res) => {
+    const error = validationResult(req);
+
+    if (!error.isEmpty()) {
+        // bad request
+        res.status(400).json({error: error.array()});
+    }
+
     try {
         await req.show.update(req.body);
 
@@ -65,6 +74,13 @@ showRouter.put("/:showId/updates",
 body("status").notEmpty().isLength({min: 5}, {max: 25}),
 getShow,
 async (req, res) => {
+    const error = validationResult(req);
+
+    if (!error.isEmpty()) {
+        // bad request
+        res.status(400).json({error: error.array()});
+    }
+
     try {
         if (req.show.status === "cancelled") {
             await req.show.update({status: "on-going"});
