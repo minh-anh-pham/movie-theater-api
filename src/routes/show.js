@@ -2,6 +2,10 @@ const {Router} = require("express");
 const showRouter = Router();
 const {Show, User} = require("../models");
 
+// middleware
+const getUser = require("../middleware/getUser");
+const getShow = require("../middleware/getShow");
+
 // The Show Router should GET ALL shows from the database using the endpoint /shows.
 showRouter.get("/", async (req, res) => {
     try {
@@ -15,11 +19,9 @@ showRouter.get("/", async (req, res) => {
 })
 
 // The Show Router should GET one show from the database using an endpoint.
-showRouter.get("/:id", async (req, res) => {
+showRouter.get("/:showId", getShow, async (req, res) => {
     try {
-        const showById = await Show.findByPk(req.params.id);
-
-        res.status(200).json({showById});
+        res.status(200).json({show: req.show});
     }
     catch (error) {
         res.status(500).json(error);
@@ -46,7 +48,7 @@ showRouter.get("/genres/:genreInput", async (req, res) => {
 })
 
 // The Show Router should update a rating on a specific show using an endpoint.
-showRouter.put("/:id/watched", async (req, res) => {
+showRouter.put("/:showId/watched", async (req, res) => {
     try {
         const showById = await Show.findByPk(req.params.id);
 
@@ -60,7 +62,7 @@ showRouter.put("/:id/watched", async (req, res) => {
 })
 
 // The Show Router should update the status on a specific show from “canceled” to “on-going” or vice versa using an endpoint.
-showRouter.put("/:id/updates", async (req, res) => {
+showRouter.put("/:showId/updates", async (req, res) => {
     try {
         const showById = await Show.findByPk(req.params.id);
 
@@ -83,7 +85,7 @@ showRouter.put("/:id/updates", async (req, res) => {
 
 
 // The Show Router should be able to delete a show.
-showRouter.delete("/:id", async (req, res) => {
+showRouter.delete("/:showId", async (req, res) => {
     try {
         const showById = await Show.findByPk(req.params.id);
 
