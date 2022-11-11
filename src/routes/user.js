@@ -3,6 +3,7 @@ const userRouter = Router();
 const {Show, User} = require("../models");
 // middleware
 const getUser = require("../middleware/getUser");
+const getShow = require("../middleware/getShow");
 
 // The User Router should GET ALL users from the database using the endpoint /users.
 userRouter.get("/", async (req, res) => {
@@ -39,14 +40,12 @@ userRouter.get("/:id/shows", getUser, async (req, res) => {
 })
 
 // The User Router should update and add a show if a user has watched it using an endpoint.
-userRouter.put("/:id/shows/:show", getUser, async (req, res) => {
+userRouter.put("/:id/shows/:showId", getUser, getShow, async (req, res) => {
     try {
-        const showById = await Show.findByPk(req.params.show);
+        await req.show.setUser(req.user);
+        await req.show.update({userId: req.params.id});
 
-        await showById.setUser(req.user);
-        await showById.update({userId: req.params.id});
-
-        res.status(200).json({showById});
+        res.status(200).json({show: req.show});
     }
     catch (error) {
         res.status(501).json(error);

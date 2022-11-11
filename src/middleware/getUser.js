@@ -1,6 +1,4 @@
 const {User} = require("../models");
-//const express = require("express");
-//const getUser = express();
 
 async function getUser (req, res, next) {
     req.user = await User.findByPk(req.params.id);
