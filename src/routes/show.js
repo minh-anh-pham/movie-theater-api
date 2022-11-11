@@ -14,4 +14,16 @@ showRouter.get("/", async (req, res) => {
     }
 })
 
+// The Show Router should GET one show from the database using an endpoint.
+showRouter.get("/:id", async (req, res) => {
+    try {
+        const showById = await Show.findByPk(req.params.id);
+
+        res.status(200).json({showById});
+    }
+    catch (error) {
+        res.status(500).json(error);
+    }
+})
+
 module.exports = showRouter;
