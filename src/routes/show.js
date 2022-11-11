@@ -1,6 +1,7 @@
 const {Router} = require("express");
 const showRouter = Router();
 const {Show, User} = require("../models");
+const {body, validationResult} = require("express-validator");
 
 // middleware
 const getUser = require("../middleware/getUser");
@@ -60,7 +61,10 @@ showRouter.put("/:showId/watched", getShow, async (req, res) => {
 })
 
 // The Show Router should update the status on a specific show from “canceled” to “on-going” or vice versa using an endpoint.
-showRouter.put("/:showId/updates", getShow, async (req, res) => {
+showRouter.put("/:showId/updates",
+body("status").notEmpty().isLength({min: 5}, {max: 25}),
+getShow,
+async (req, res) => {
     try {
         if (req.show.status === "cancelled") {
             await req.show.update({status: "on-going"});
@@ -78,7 +82,6 @@ showRouter.put("/:showId/updates", getShow, async (req, res) => {
         res.status(501).json(error);
     }
 })
-
 
 // The Show Router should be able to delete a show.
 showRouter.delete("/:showId", async (req, res) => {
