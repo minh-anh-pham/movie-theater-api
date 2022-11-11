@@ -48,13 +48,11 @@ showRouter.get("/genres/:genreInput", async (req, res) => {
 })
 
 // The Show Router should update a rating on a specific show using an endpoint.
-showRouter.put("/:showId/watched", async (req, res) => {
+showRouter.put("/:showId/watched", getShow, async (req, res) => {
     try {
-        const showById = await Show.findByPk(req.params.id);
+        await req.show.update(req.body);
 
-        await showById.update(req.body);
-
-        res.status(200).json({showById});
+        res.status(200).json({show: req.show});
     }
     catch (error) {
         res.status(501).json(error);
@@ -62,21 +60,19 @@ showRouter.put("/:showId/watched", async (req, res) => {
 })
 
 // The Show Router should update the status on a specific show from “canceled” to “on-going” or vice versa using an endpoint.
-showRouter.put("/:showId/updates", async (req, res) => {
+showRouter.put("/:showId/updates", getShow, async (req, res) => {
     try {
-        const showById = await Show.findByPk(req.params.id);
-
-        if (showById.status === "cancelled") {
-            await showById.update({status: "on-going"});
+        if (req.show.status === "cancelled") {
+            await req.show.update({status: "on-going"});
         }
-        else if (showById.status === "on-going") {
-            await showById.update({status: "cancelled"});
+        else if (req.show.status === "on-going") {
+            await req.show.update({status: "cancelled"});
         }
         else {
             throw new Error("Show's status is not cancelled or on-going?!");
         }
 
-        res.status(200).json({showById});
+        res.status(200).json({show: req.show});
     }
     catch (error) {
         res.status(501).json(error);
@@ -87,9 +83,9 @@ showRouter.put("/:showId/updates", async (req, res) => {
 // The Show Router should be able to delete a show.
 showRouter.delete("/:showId", async (req, res) => {
     try {
-        const showById = await Show.findByPk(req.params.id);
+        await req.show.destroy();
 
-        await showById.destroy();
+        res.sendStatus(200);
     }
     catch (error) {
         res.status(501).json(error);
