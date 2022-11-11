@@ -52,13 +52,35 @@ showRouter.put("/:id/watched", async (req, res) => {
 
         await showById.update(req.body);
 
-        res.status(200).json(showById);
+        res.status(200).json({showById});
     }
     catch (error) {
         res.status(501).json(error);
     }
 })
 
+// The Show Router should update the status on a specific show from “canceled” to “on-going” or vice versa using an endpoint.
+showRouter.put("/:id/updates", async (req, res) => {
+    try {
+        const showById = await Show.findByPk(req.params.id);
 
+        console.log(showById.status);
+
+        if (showById.status === "cancelled") {
+            await showById.update({status: "on-going"});
+        }
+        else if (showById.status === "on-going") {
+            await showById.update({status: "cancelled"});
+        }
+        else {
+            throw new Error("Show's status is not cancelled or on-going?!");
+        }
+
+        res.status(200).json({showById});
+    }
+    catch (error) {
+        res.status(501).json(error);
+    }
+})
 
 module.exports = showRouter;
