@@ -6,7 +6,7 @@ const {Show, User} = require("../models");
 userRouter.get("/", async (req, res) => {
     try {
         const allUsers = await User.findAll();
-        console.log(allUsers);
+
         res.status(200).json({allUsers});
     }
     catch (error) {
