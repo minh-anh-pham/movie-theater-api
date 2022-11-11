@@ -26,4 +26,23 @@ showRouter.get("/:id", async (req, res) => {
     }
 })
 
+// The Show Router should get shows of a specific genre using an endpoint.
+showRouter.get("/genres/:genreInput", async (req, res) => {
+    try {
+        // format user input so first letter is capitalised
+        const firstLetter = req.params.genreInput.charAt(0).toUpperCase();
+
+        const restOfInput = req.params.genreInput.slice(1).toLowerCase();
+
+        const input = firstLetter + restOfInput;
+
+        const showByGenre = await Show.findAll({where: {genre: input}});
+
+        res.status(200).json({showByGenre});
+    }
+    catch (error) {
+        res.status(500).json(error);
+    }
+})
+
 module.exports = showRouter;
