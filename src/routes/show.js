@@ -64,8 +64,6 @@ showRouter.put("/:id/updates", async (req, res) => {
     try {
         const showById = await Show.findByPk(req.params.id);
 
-        console.log(showById.status);
-
         if (showById.status === "cancelled") {
             await showById.update({status: "on-going"});
         }
@@ -77,6 +75,19 @@ showRouter.put("/:id/updates", async (req, res) => {
         }
 
         res.status(200).json({showById});
+    }
+    catch (error) {
+        res.status(501).json(error);
+    }
+})
+
+
+// The Show Router should be able to delete a show.
+showRouter.delete("/:id", async (req, res) => {
+    try {
+        const showById = await Show.findByPk(req.params.id);
+
+        await showById.destroy();
     }
     catch (error) {
         res.status(501).json(error);
