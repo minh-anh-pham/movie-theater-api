@@ -45,4 +45,20 @@ showRouter.get("/genres/:genreInput", async (req, res) => {
     }
 })
 
+// The Show Router should update a rating on a specific show using an endpoint.
+showRouter.put("/:id/watched", async (req, res) => {
+    try {
+        const showById = await Show.findByPk(req.params.id);
+
+        await showById.update(req.body);
+
+        res.status(200).json(showById);
+    }
+    catch (error) {
+        res.status(501).json(error);
+    }
+})
+
+
+
 module.exports = showRouter;
