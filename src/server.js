@@ -4,12 +4,13 @@ const {db} = require("./db/db");
 
 // routes
 const userRouter = require("./routes/user");
+app.use("/users", userRouter);
 const showRouter = require("./routes/show");
+app.use("/shows", showRouter);
 
 // parse json format
 app.use(express.json());
-app.use("/users", userRouter);
-app.use("/shows", showRouter);
+
 
 // init server on port 3000
 app.listen(3000, async () => {
