@@ -2,6 +2,10 @@ const {Router} = require("express");
 const showRouter = Router();
 const {Show, User} = require("../models");
 const {body, validationResult} = require("express-validator");
+// read req.body
+const bodyParser = require("body-parser");
+// read req.body in json form
+const jsonParser = bodyParser.json();
 
 // middleware
 const getUser = require("../middleware/getUser");
@@ -51,14 +55,8 @@ showRouter.get("/genres/:genreInput", async (req, res) => {
 // The Show Router should update a rating on a specific show using an endpoint.
 showRouter.put("/:showId/watched",
 body("rating").notEmpty(),
-getShow, async (req, res) => {
-    const error = validationResult(req);
-
-    if (!error.isEmpty()) {
-        // bad request
-        res.status(400).json({error: error.array()});
-    }
-
+getShow, jsonParser,
+async (req, res) => {
     try {
         await req.show.update(req.body);
 
@@ -71,16 +69,10 @@ getShow, async (req, res) => {
 
 // The Show Router should update the status on a specific show from “canceled” to “on-going” or vice versa using an endpoint.
 showRouter.put("/:showId/updates",
-body("status").notEmpty().isLength({min: 5}, {max: 25}),
-getShow,
-async (req, res) => {
-    const error = validationResult(req);
-
-    if (!error.isEmpty()) {
-        // bad request
-        res.status(400).json({error: error.array()});
-    }
-
+body("status").notEmpty(),
+body("status").isLength({min: 5}),
+body("status").isLength({max: 25}),
+getShow, async (req, res) => {
     try {
         if (req.show.status === "cancelled") {
             await req.show.update({status: "on-going"});
