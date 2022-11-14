@@ -1,14 +1,13 @@
 const {Router} = require("express");
 const showRouter = Router();
-const {Show, User} = require("../models");
-const {body, validationResult} = require("express-validator");
+const {Show} = require("../models");
+const {body, check, validationResult} = require("express-validator");
 // read req.body
 const bodyParser = require("body-parser");
 // read req.body in json form
 const jsonParser = bodyParser.json();
 
 // middleware
-const getUser = require("../middleware/getUser");
 const getShow = require("../middleware/getShow");
 
 // The Show Router should GET ALL shows from the database using the endpoint /shows.
@@ -54,9 +53,15 @@ showRouter.get("/genres/:genreInput", async (req, res) => {
 
 // The Show Router should update a rating on a specific show using an endpoint.
 showRouter.put("/:showId/watched",
-body("rating").notEmpty(),
+body("rating").exists({checkFalsy: true}),
 getShow, jsonParser,
 async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()});
+    }
+
     try {
         await req.show.update(req.body);
 
@@ -69,11 +74,18 @@ async (req, res) => {
 
 // The Show Router should update the status on a specific show from “canceled” to “on-going” or vice versa using an endpoint.
 showRouter.put("/:showId/updates",
-body("status").notEmpty(),
+body("status").exists({checkFalsy: true}),
 body("status").isLength({min: 5}),
 body("status").isLength({max: 25}),
 getShow, async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()});
+    }
+
     try {
+        /*
         if (req.show.status === "cancelled") {
             await req.show.update({status: "on-going"});
         }
@@ -83,6 +95,9 @@ getShow, async (req, res) => {
         else {
             throw new Error("Show's status is not cancelled or on-going?!");
         }
+        */
+
+        await req.show.update(req.body);
 
         res.status(200).json({show: req.show});
     }

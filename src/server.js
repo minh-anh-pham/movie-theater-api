@@ -11,7 +11,6 @@ app.use("/shows", showRouter);
 // parse json format
 app.use(express.json());
 
-
 // init server on port 3000
 app.listen(3000, async () => {
     await db.sync();
